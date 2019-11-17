@@ -37,12 +37,14 @@
   border-bottom: 1px solid #8e8e91;
   height: 27px;
   position: relative;
-  top: 19px;
+  top: 20px;
   margin-right: 10px;
+  text-align: center;
+  color: #8e8e91;
 }
 
-.answer-item .answer-description > div {
-  width: 500px;
+.answer-item .answer-description {
+  width: 37%;
 }
 
 .answer-item .answer-correct {
@@ -55,6 +57,68 @@
   right: 10px;
 }
 
+.button-save-container {
+  float: right;
+  margin-top: 10px;
+}
+
+.answer-list {
+  max-height: 245px;
+  overflow: scroll;
+}
+
+.answer-item > .answer-delete {
+  width: 30px;
+  border-right: 1px solid #8e8e91;
+  border-bottom: 1px solid #8e8e91;
+  height: 27px;
+  position: relative;
+  top: 20px;
+  margin-right: 10px;
+  text-align: center;
+  color: #8e8e91;
+  cursor: pointer;
+}
+
 .form-container div[class^='container_'] {
   margin-top: 10px;
+}
+
+.promp-container {
+  display: flex;
+  justify-content: space-between;
+  width: 244px;
+}
+
+.promp-container {
+  color: #8e8e91;
+  margin-top: 15px;
+}
+
+.loader {
+  width: 100px !important;
+  height: 100px !important;
+  position: absolute;
+  left: 50%;
+  top: 46%;
+}
+
+.center {
+  text-align: center;
+}
+
+.emoji-container {
+  text-align: center;
+}
+
+.emoji-container svg {
+  font-size: 133px;
+}
+
+.emoji-container svg.failure {
+  color: red;
+}
+
+.emoji-container svg.success {
+  color: green;
 }

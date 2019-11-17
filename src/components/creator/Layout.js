@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { Row, Column } from 'simple-flexbox';
 import { FormControl } from '@material-ui/core';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -7,9 +7,15 @@ import { InputLabel } from '@material-ui/core';
 import { Checkbox } from '@material-ui/core';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
+import Fab from '@material-ui/core/Fab';
+import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
 import { StyleSheet, css } from 'aphrodite';
+import PrompSlider from './PrompSlider';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { canSave, validateUrl } from './helper';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +28,7 @@ const styles = StyleSheet.create({
   answerContiner: {
     width: '100%',
     height: ' 300px',
-    border: '1px solid',
+    border: '1px solid #8e8e91',
     marginTop: '15px',
     position: 'relative',
   },
@@ -35,6 +41,12 @@ const styles = StyleSheet.create({
 });
 
 const Layout = props => {
+  useEffect(() => {
+    if (props.isLoading === false && props.finishSave === 'finished') {
+      handleFinishSave();
+    }
+  }, [props.isLoading]);
+
   const [currentVideo, setCurrenVideo] = useState({
     videoUrl: '',
     title: '',
@@ -54,26 +66,55 @@ const Layout = props => {
   const handleChangeAnswer = (value, prop, index) => {
     const answerListState = ansewerList;
     answerListState[index][prop] = value;
-    setAnswerList(answerListState);
+    setAnswerList([...answerListState]);
   };
 
-  const validateUrl = () => {
-    if (currentVideo.videoUrl === '') {
-      return true;
-    }
-    const urlRegex = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
-    return urlRegex.test(currentVideo.videoUrl);
+  const handleCreateAnswer = () => {
+    const answerListState = ansewerList;
+    const answer = {
+      key: Date.now(),
+      description: '',
+      urlAfterAnser: '',
+      isCorrect: false,
+    };
+
+    answerListState.push(answer);
+    setAnswerList([...answerListState]);
+  };
+
+  const handleDeleteAnswer = index => {
+    const answerListState = ansewerList;
+    answerListState.splice(index, 1);
+    setAnswerList([...answerListState]);
+  };
+
+  const handleSaveVideo = () => {
+    currentVideo.answers = ansewerList;
+    props.saveAnswer(currentVideo);
+  };
+
+  const handleFinishSave = () => {
+    setCurrenVideo({
+      videoUrl: '',
+      title: '',
+      question: '',
+      answers: [],
+      prompAt: null,
+      promptValue: null,
+    });
+    setAnswerList([]);
+    window.location.reload();
   };
 
   const renderAnswers = () => {
     return ansewerList.map((anItem, index) => {
       return (
         <div className={'answer-item'}>
-          <div className={'answer-index'}></div>
+          <div className={'answer-index'}>{index + 1}</div>
           <div className={'answer-description'}>
             <Row>
               <FormControl fullWidth={true}>
-                <InputLabel>{'Description'}</InputLabel>
+                <InputLabel>{'Answer'}</InputLabel>
                 <Input
                   value={anItem.description}
                   onChange={event =>
@@ -85,10 +126,11 @@ const Layout = props => {
           </div>
           <div className={'answer-description'}>
             <Row>
-              <FormControl fullWidth={true}>
+              <FormControl fullWidth={true} key={index}>
                 <InputLabel>{'Redirects to after answer'}</InputLabel>
                 <Input
                   value={anItem.urlAfterAnser}
+                  error={!validateUrl(anItem.urlAfterAnser)}
                   onChange={event =>
                     handleChangeAnswer(
                       event.target.value,
@@ -97,6 +139,12 @@ const Layout = props => {
                     )
                   }
                 ></Input>
+                <FormHelperText
+                  hidden={validateUrl(anItem.urlAfterAnser)}
+                  className={css(styles.error)}
+                >
+                  {'Wrong  Url'}
+                </FormHelperText>
               </FormControl>
             </Row>
           </div>
@@ -115,9 +163,15 @@ const Layout = props => {
                     }
                   />
                 }
-                label='Gilad Gray'
+                label='isCorrect'
               />
             </FormGroup>
+          </div>
+          <div
+            className={'answer-delete'}
+            onClick={() => handleDeleteAnswer(index)}
+          >
+            {'x'}
           </div>
         </div>
       );
@@ -126,83 +180,110 @@ const Layout = props => {
 
   return (
     <div className={'form-container'}>
-      <Row
-        className={css(styles.container)}
-        horizontal='start'
-        vertical='center'
-      >
-        <Column className={css(styles.input)} flexGrow={1}>
-          <FormControl fullWidth={true}>
-            <InputLabel>{'Tile*'}</InputLabel>
-            <Input
-              value={currentVideo.title}
-              onChange={event => handleChange(event.target.value, 'title')}
-            ></Input>
-          </FormControl>
-        </Column>
-      </Row>
-      <Row
-        className={css(styles.container)}
-        horizontal='start'
-        vertical='center'
-      >
-        <Column className={css(styles.input)} flexGrow={1}>
-          <FormControl fullWidth={true}>
-            <InputLabel>{'Video Url*'}</InputLabel>
-            <Input
-              value={currentVideo.videoUrl}
-              error={!validateUrl()}
-              onChange={event => handleChange(event.target.value, 'videoUrl')}
-            ></Input>
-            <FormHelperText
-              hidden={validateUrl()}
-              className={css(styles.error)}
+      {!props.isLoading ? (
+        <Fragment>
+          <Row
+            className={css(styles.container)}
+            horizontal='start'
+            vertical='center'
+          >
+            <Column className={css(styles.input)} flexGrow={1}>
+              <FormControl fullWidth={true}>
+                <InputLabel>{'Title*'}</InputLabel>
+                <Input
+                  value={currentVideo.title}
+                  onChange={event => handleChange(event.target.value, 'title')}
+                ></Input>
+              </FormControl>
+            </Column>
+          </Row>
+          <Row
+            className={css(styles.container)}
+            horizontal='start'
+            vertical='center'
+          >
+            <Column className={css(styles.input)} flexGrow={1}>
+              <FormControl fullWidth={true}>
+                <InputLabel>{'Video Url*'}</InputLabel>
+                <Input
+                  value={currentVideo.videoUrl}
+                  error={!validateUrl(currentVideo.videoUrl)}
+                  onChange={event =>
+                    handleChange(event.target.value, 'videoUrl')
+                  }
+                ></Input>
+                <FormHelperText
+                  hidden={validateUrl(currentVideo.videoUrl)}
+                  className={css(styles.error)}
+                >
+                  {'Wrong video Url'}
+                </FormHelperText>
+              </FormControl>
+            </Column>
+          </Row>
+          <Row
+            className={css(styles.container)}
+            horizontal='start'
+            vertical='center'
+          >
+            <Column className={css(styles.input)} flexGrow={1}>
+              <FormControl fullWidth={true}>
+                <InputLabel>{'Question*'}</InputLabel>
+                <Input
+                  name={'questionInput'}
+                  value={currentVideo.question}
+                  onChange={event =>
+                    handleChange(event.target.value, 'question')
+                  }
+                ></Input>
+              </FormControl>
+            </Column>
+          </Row>
+          <Row
+            className={css(styles.container)}
+            horizontal='start'
+            vertical='center'
+          >
+            <PrompSlider onChange={value => handleChange(value, 'prompAt')} />
+          </Row>
+          <Row
+            className={css(styles.container)}
+            horizontal='start'
+            vertical='center'
+          >
+            <Column className={css(styles.input)} flexGrow={1}>
+              <InputLabel className={css(styles.answerLabel)}>
+                {'Answers*'}
+              </InputLabel>
+              <div className={css(styles.answerContiner)}>
+                <div className='answer-list'>{renderAnswers()}</div>
+                <div className='button-answer-container'>
+                  <Fab
+                    color='primary'
+                    aria-label='add'
+                    onClick={() => handleCreateAnswer()}
+                    disabled={ansewerList.length > 5}
+                  >
+                    <AddIcon />
+                  </Fab>
+                </div>
+              </div>
+            </Column>
+          </Row>
+          <div className='button-save-container'>
+            <Button
+              variant='contained'
+              color='secondary'
+              onClick={() => handleSaveVideo()}
+              disabled={!canSave(currentVideo, ansewerList)}
             >
-              {'Wrong video Url'}
-            </FormHelperText>
-          </FormControl>
-        </Column>
-      </Row>
-      <Row
-        className={css(styles.container)}
-        horizontal='start'
-        vertical='center'
-      >
-        <Column className={css(styles.input)} flexGrow={1}>
-          <FormControl fullWidth={true}>
-            <InputLabel>{'Question*'}</InputLabel>
-            <Input
-              name={'IsnputVideoUrl'}
-              value={currentVideo.question}
-              onChange={event => handleChange(event.target.value, 'question')}
-            ></Input>
-          </FormControl>
-        </Column>
-      </Row>
-
-      <Row
-        className={css(styles.container)}
-        horizontal='start'
-        vertical='center'
-      >
-        <Column className={css(styles.input)} flexGrow={1}>
-          <InputLabel className={css(styles.answerLabel)}>
-            {'Answers*'}
-          </InputLabel>
-          <div className={css(styles.answerContiner)}>
-            {renderAnswers()}
-            <div className='button-answer-container'>
-              <Button
-                variant='contained'
-                color='primary'
-                disabled={ansewerList.length > 5}
-              >
-                Add Answer
-              </Button>
-            </div>
+              save
+            </Button>
           </div>
-        </Column>
-      </Row>
+        </Fragment>
+      ) : (
+        <CircularProgress className='loader' />
+      )}
     </div>
   );
 };

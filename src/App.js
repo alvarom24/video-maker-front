@@ -19,17 +19,6 @@ import Course from './containers/Course';
 const client = new ApolloClient({
   uri: 'http://localhost:3002/course',
 });
-client
-  .query({
-    query: gql`
-      {
-        courseById(id: "5dd03cb57aa7d50517c8822c") {
-          answers
-        }
-      }
-    `,
-  })
-  .then(result => console.log(result));
 
 const styles = StyleSheet.create({
   container: {

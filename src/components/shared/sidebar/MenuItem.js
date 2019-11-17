@@ -53,7 +53,7 @@ const MenuItem = props => {
       {active && <div className={css(styles.activeBar)}></div>}
       <Icon fill={active && '#DDE2FF'} opacity={!active && '0.4'} />
       <span className={css(styles.title, active && styles.activeTitle)}>
-        <Link className={css(styles.linkItem)} to='/creator'>
+        <Link className={css(styles.linkItem)} to={`/${title}`}>
           {title}
         </Link>
       </span>
