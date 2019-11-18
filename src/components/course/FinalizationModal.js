@@ -1,9 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import EmojiEmotionsIcon from '@material-ui/icons/EmojiEmotions';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';
@@ -33,7 +30,12 @@ const useStyles = makeStyles(theme => ({
 const FinalizationModal = props => {
   const classes = useStyles();
   const [modalStyle] = React.useState(getModalStyle);
-
+  const userAnswers = props.anseweredList.filter(
+    aItem => aItem.checked === true
+  );
+  const correctAnswers = props.anseweredList.filter(
+    aItem => aItem.isCorrect === true
+  );
   return (
     <div>
       <Modal
@@ -51,6 +53,20 @@ const FinalizationModal = props => {
             ) : (
               <SentimentVeryDissatisfiedIcon className='failure' />
             )}
+          </div>
+          <div className='results'>
+            <span>{'Correct Answers:'} </span>
+            <ul>
+              {correctAnswers.map((correctItem, index) => {
+                return <li key={index}>{correctItem.description} </li>;
+              })}
+            </ul>
+            <span>{'Your Answers:'} </span>
+            <ul>
+              {userAnswers.map((userItem, index) => {
+                return <li key={`${index}Answer`}>{userItem.description} </li>;
+              })}
+            </ul>
           </div>
           <div className='button-save-container'>
             <Button

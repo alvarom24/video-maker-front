@@ -35,6 +35,7 @@ const LogoComponent = () => {
       <img
         src='https://mk0thinkificig8baqk3.kinstacdn.com/wp-content/themes/thinkific/assets/images/thinkific-icon.svg'
         className={css(styles.image)}
+        alt='logo'
       />
       <span className={css(styles.title)}>Thinkific</span>
     </Row>

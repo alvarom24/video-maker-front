@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Layout from '../components/creator/Layout';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useQuery, useMutation } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { Query } from 'react-apollo';
 
@@ -44,7 +44,6 @@ const CREATE_COURSE = gql`
 const Creator = () => {
   const [isLoading, setIsloading] = useState(false);
   const [finishSave, setFinishSave] = useState('unFinished');
-  const { loading2, error2, data2 } = useQuery(QUERY_ALL);
   const [createCourse, { loading, error }] = useMutation(CREATE_COURSE);
   const handleSaveVideo = video => {
     setIsloading(true);
@@ -63,6 +62,9 @@ const Creator = () => {
         setIsloading(loading);
         setFinishSave('finished');
       }
+      if (error) {
+        console.log(error);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -74,7 +76,7 @@ const Creator = () => {
         if (result.loading) return <CircularProgress className='loader' />;
         if (result.error) return <p>{result.error.message}</p>;
         if (result.data && result.data.allCourses.length > 0) {
-          return 'There is one or more videos in DB please drop';
+          return 'There is already one video in DB please drop';
         } else {
           return (
             <Layout

@@ -1,12 +1,11 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Row, Column } from 'simple-flexbox';
+import { Row } from 'simple-flexbox';
 import { StyleSheet, css } from 'aphrodite';
-import Modal from '@material-ui/core/Modal';
-
 import VideoPlayer from '../shared/videoplayer/VideoPlayer';
 import QuestionModal from './QuestionModal';
 import FinalizationModal from './FinalizationModal';
+import EmailModal from './EmailModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -16,14 +15,22 @@ const styles = StyleSheet.create({
 });
 
 const Layout = props => {
+  useEffect(() => {
+    openEmailModal();
+  }, [props.video]);
   const { answers } = props.video;
-  const parsedAnswers = JSON.parse(answers);
+  const parsedAnswers = JSON.parse(answers).map(answer => {
+    answer.checked = false;
+    return answer;
+  });
   const [isOpenModalQuestion, setIsOpenModalQuestion] = useState(false);
   const [isStoppedPlayer, setisStoppedPlayer] = useState(true);
   const [wasModalOppened, setWasModalOppened] = useState(false);
   const [anseweredList, setAnsweredList] = useState(parsedAnswers);
   const [answeredSucessfull, setAnsweredSucessfull] = useState(false);
   const [isOpenModalFinalization, setIsOpenModalFinalization] = useState(false);
+  const [isOpenEmailModal, setIsOpenEmailModal] = useState(false);
+  const [currentEmail, setCurrentEmail] = useState('');
 
   const canRender = () => {
     return props && props.video;
@@ -35,6 +42,10 @@ const Layout = props => {
     setWasModalOppened(true);
   };
 
+  const openEmailModal = () => {
+    setIsOpenEmailModal(true);
+  };
+
   const handleCloseModal = () => {
     setIsOpenModalQuestion(false);
   };
@@ -43,6 +54,9 @@ const Layout = props => {
     const anseweredListState = anseweredList;
     anseweredListState[index].checked = checked;
     setAnsweredList([...anseweredListState]);
+    if (anseweredListState[index].urlAfterAnser) {
+      window.open(anseweredListState[index].urlAfterAnser, '_blank');
+    }
   };
 
   const handleFinishedVideo = () => {
@@ -58,7 +72,7 @@ const Layout = props => {
       }
     });
 
-    if (results.length > correctAnswers.length / 2) {
+    if (results.length >= correctAnswers.length / 2) {
       setAnsweredSucessfull(true);
     }
     setIsOpenModalFinalization(true);
@@ -69,7 +83,12 @@ const Layout = props => {
     window.location.reload();
   };
 
-  if (canRender()) {
+  const onStartWithEmail = email => {
+    setCurrentEmail(email);
+    setIsOpenEmailModal(false);
+  };
+
+  if (canRender() && currentEmail !== '') {
     return (
       <Fragment>
         <div className='center'>
@@ -90,6 +109,7 @@ const Layout = props => {
             onEnded={() => handleFinishedVideo()}
           />
           <QuestionModal
+            key={'qModal'}
             answers={anseweredList}
             video={props.video}
             open={isOpenModalQuestion}
@@ -99,15 +119,22 @@ const Layout = props => {
             }
           />
           <FinalizationModal
+            key={'fModal'}
             open={isOpenModalFinalization}
             succeed={answeredSucessfull}
             handleCloseFinishModal={() => handleCloseFinishModal()}
+            anseweredList={anseweredList}
           />
         </Row>
       </Fragment>
     );
   } else {
-    return '';
+    return (
+      <EmailModal
+        open={isOpenEmailModal}
+        onProceed={email => onStartWithEmail(email)}
+      />
+    );
   }
 };
 

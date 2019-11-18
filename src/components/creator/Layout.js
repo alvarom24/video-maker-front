@@ -14,6 +14,8 @@ import Switch from '@material-ui/core/Switch';
 import { StyleSheet, css } from 'aphrodite';
 import PrompSlider from './PrompSlider';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AnswerModal from './AnswerModal';
+import AnswersTable from './AnswersTable';
 
 import { canSave, validateUrl } from './helper';
 
@@ -56,6 +58,7 @@ const Layout = props => {
     promptValue: null,
   });
   const [ansewerList, setAnswerList] = useState([]);
+  const [isOpenAddAnSwerModal, setIsOpenAddAnSwerModal] = useState(false);
 
   const handleChange = (value, prop) => {
     const currentVideoFromState = currentVideo;
@@ -69,17 +72,12 @@ const Layout = props => {
     setAnswerList([...answerListState]);
   };
 
-  const handleCreateAnswer = () => {
+  const handleCreateAnswer = answer => {
     const answerListState = ansewerList;
-    const answer = {
-      key: Date.now(),
-      description: '',
-      urlAfterAnser: '',
-      isCorrect: false,
-    };
-
     answerListState.push(answer);
     setAnswerList([...answerListState]);
+
+    setIsOpenAddAnSwerModal(false);
   };
 
   const handleDeleteAnswer = index => {
@@ -104,78 +102,6 @@ const Layout = props => {
     });
     setAnswerList([]);
     window.location.reload();
-  };
-
-  const renderAnswers = () => {
-    return ansewerList.map((anItem, index) => {
-      return (
-        <div className={'answer-item'}>
-          <div className={'answer-index'}>{index + 1}</div>
-          <div className={'answer-description'}>
-            <Row>
-              <FormControl fullWidth={true}>
-                <InputLabel>{'Answer'}</InputLabel>
-                <Input
-                  value={anItem.description}
-                  onChange={event =>
-                    handleChangeAnswer(event.target.value, 'description', index)
-                  }
-                ></Input>
-              </FormControl>
-            </Row>
-          </div>
-          <div className={'answer-description'}>
-            <Row>
-              <FormControl fullWidth={true} key={index}>
-                <InputLabel>{'Redirects to after answer'}</InputLabel>
-                <Input
-                  value={anItem.urlAfterAnser}
-                  error={!validateUrl(anItem.urlAfterAnser)}
-                  onChange={event =>
-                    handleChangeAnswer(
-                      event.target.value,
-                      'urlAfterAnser',
-                      index
-                    )
-                  }
-                ></Input>
-                <FormHelperText
-                  hidden={validateUrl(anItem.urlAfterAnser)}
-                  className={css(styles.error)}
-                >
-                  {'Wrong  Url'}
-                </FormHelperText>
-              </FormControl>
-            </Row>
-          </div>
-          <div className={'answer-correct'}>
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={anItem.isCorrect}
-                    onChange={event =>
-                      handleChangeAnswer(
-                        event.target.checked,
-                        'isCorrect',
-                        index
-                      )
-                    }
-                  />
-                }
-                label='isCorrect'
-              />
-            </FormGroup>
-          </div>
-          <div
-            className={'answer-delete'}
-            onClick={() => handleDeleteAnswer(index)}
-          >
-            {'x'}
-          </div>
-        </div>
-      );
-    });
   };
 
   return (
@@ -256,12 +182,17 @@ const Layout = props => {
                 {'Answers*'}
               </InputLabel>
               <div className={css(styles.answerContiner)}>
-                <div className='answer-list'>{renderAnswers()}</div>
+                <div className='answer-list'>
+                  <AnswersTable
+                    answers={ansewerList}
+                    handleDeteleAnswer={index => handleDeleteAnswer(index)}
+                  />
+                </div>
                 <div className='button-answer-container'>
                   <Fab
                     color='primary'
                     aria-label='add'
-                    onClick={() => handleCreateAnswer()}
+                    onClick={() => setIsOpenAddAnSwerModal(true)}
                     disabled={ansewerList.length > 5}
                   >
                     <AddIcon />
@@ -280,6 +211,10 @@ const Layout = props => {
               save
             </Button>
           </div>
+          <AnswerModal
+            open={isOpenAddAnSwerModal}
+            saveAnswer={answer => handleCreateAnswer(answer)}
+          />
         </Fragment>
       ) : (
         <CircularProgress className='loader' />

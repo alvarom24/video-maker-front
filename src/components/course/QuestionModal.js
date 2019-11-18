@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
-import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
@@ -40,28 +39,20 @@ const SimpleModal = props => {
         open={props.open}
       >
         <div style={modalStyle} className={classes.paper}>
-          <h2 id='simple-modal-title'>{props.video.question}</h2>
+          <h2 id='simple-modal-title'>{'Results'}</h2>
           {props.answers.map((aItem, index) => {
             return (
-              <div className='modal-answer-container'>
-                <div className='answer-check'>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={aItem.checked}
-                        onChange={event =>
-                          props.onChangeAnswerSelection(
-                            event.target.checked,
-                            index
-                          )
-                        }
-                        value='checkedA'
-                      />
+              <div key={`${index}dC`} className='modal-answer-container'>
+                <div key={`${index}dCk`} className='answer-check'>
+                  <Checkbox
+                    checked={aItem.checked}
+                    onChange={event =>
+                      props.onChangeAnswerSelection(event.target.checked, index)
                     }
-                    label={aItem.description}
-                  />{' '}
+                    key={`${index}Check`}
+                  />
+                  {aItem.description}
                 </div>
-                <div className='answer-description'></div>
               </div>
             );
           })}

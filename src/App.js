@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  withRouter,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Column, Row } from 'simple-flexbox';
 import { StyleSheet, css } from 'aphrodite';
 import Sidebar from './components/shared/sidebar/Sidebar';
@@ -12,7 +7,6 @@ import Header from './components/shared/Header';
 import './App.css';
 import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
-import { gql } from 'apollo-boost';
 import Creator from './containers/Creator';
 import Course from './containers/Course';
 
@@ -34,7 +28,7 @@ const styles = StyleSheet.create({
 });
 
 const App = () => {
-  const [selectedItem, setSelectedItem] = useState('Creator');
+  const [selectedItem, setSelectedItem] = useState('Course');
   return (
     <ApolloProvider client={client}>
       <Router>

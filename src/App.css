@@ -122,3 +122,7 @@
 .emoji-container svg.success {
   color: green;
 }
+
+.delete-answer-icon {
+  cursor: pointer;
+}

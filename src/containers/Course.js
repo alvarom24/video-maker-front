@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Layout from '../components/course/Layout';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useQuery, useMutation } from '@apollo/react-hooks';
