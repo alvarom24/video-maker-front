@@ -42,7 +42,6 @@ const Course = () => {
   const [createResult, { loading, error }] = useMutation(CREATE_RESULT);
 
   const handleFinishVideo = variables => {
-    debugger;
     try {
       createResult({ variables: variables });
       if (error) {

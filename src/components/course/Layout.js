@@ -85,7 +85,6 @@ const Layout = props => {
       userAnswers: JSON.stringify(userAnswers),
       correctAnswers: JSON.stringify(correctAnswers),
     };
-    debugger;
     props.handleFinishVideo(variables);
   };
 
