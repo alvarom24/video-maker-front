@@ -23,39 +23,43 @@ const useStyles = makeStyles({
 const ResultsTable = props => {
   const classes = useStyles();
 
+  const renderAswers = answers => {
+    const formattedAnswers = JSON.parse(answers);
+    if (formattedAnswers.length > 0) {
+      return (
+        <ul>
+          {formattedAnswers.map((aItem, index) => {
+            const dateKey = Date.now();
+            return <li key={`${dateKey}${index}`}>{aItem.description}</li>;
+          })}
+        </ul>
+      );
+    }
+
+    return 'No answer provided';
+  };
+
   return (
     <Paper className={classes.root}>
       <Table className={classes.table} aria-label='answers table'>
         <TableHead>
           <TableRow>
-            <TableCell align='center'>#</TableCell>
-            <TableCell align='center'>Answer</TableCell>
-            <TableCell align='center'>Redirect To</TableCell>
-            <TableCell align='center'>Correct</TableCell>
-            <TableCell align='center'>Options</TableCell>
+            <TableCell align='center'>Course Id</TableCell>
+            <TableCell align='center'>User</TableCell>
+            <TableCell align='center'>User Answers</TableCell>
+            <TableCell align='center'>Correct Answers</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.answers.map((row, index) => (
+          {props.results.map((row, index) => (
             <TableRow key={index}>
-              <TableCell align='center'>{index + 1}</TableCell>
-              <TableCell align='center'>{row.description}</TableCell>
-              <TableCell align='center'>
-                {row.urlAfterAnser ? row.urlAfterAnser : ''}
+              <TableCell align='center'>{row.courseId}</TableCell>
+              <TableCell align='center'>{row.user}</TableCell>
+              <TableCell align='left'>
+                {renderAswers(row.userAnswers)}
               </TableCell>
-              <TableCell align='center'>
-                {row.isCorrect ? (
-                  <CheckCircleIcon key={`${index}circle`} />
-                ) : (
-                  <CancelIcon key={`${index}cance`} />
-                )}
-              </TableCell>
-              <TableCell align='center'>
-                <DeleteForeverIcon
-                  className='delete-answer-icon'
-                  onClick={() => props.handleDeteleAnswer(index)}
-                  key={`${index}delete`}
-                />
+              <TableCell align='left'>
+                {renderAswers(row.correctAnswers)}
               </TableCell>
             </TableRow>
           ))}

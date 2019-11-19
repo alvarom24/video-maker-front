@@ -9,6 +9,7 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import ApolloClient from 'apollo-boost';
 import Creator from './containers/Creator';
 import Course from './containers/Course';
+import Results from './containers/Results';
 
 const client = new ApolloClient({
   uri: 'http://localhost:3002/course',
@@ -46,6 +47,9 @@ const App = () => {
                 </Route>
                 <Route path='/course'>
                   <Course />
+                </Route>
+                <Route path='/results'>
+                  <Results />
                 </Route>
                 <Route path='/'>
                   <Creator />

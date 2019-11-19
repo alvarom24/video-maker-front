@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Fragment } from 'react';
 import Layout from '../components/creator/Layout';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useMutation } from '@apollo/react-hooks';
@@ -71,24 +71,26 @@ const Creator = () => {
   };
 
   return (
-    <Query query={QUERY_ALL}>
-      {result => {
-        if (result.loading) return <CircularProgress className='loader' />;
-        if (result.error) return <p>{result.error.message}</p>;
-        if (result.data && result.data.allCourses.length > 0) {
-          return 'There is already one video in DB please drop';
-        } else {
-          return (
-            <Layout
-              key={finishSave}
-              saveAnswer={video => handleSaveVideo(video)}
-              isLoading={isLoading}
-              finishSave={finishSave}
-            />
-          );
-        }
-      }}
-    </Query>
+    <Fragment>
+      <Query query={QUERY_ALL}>
+        {result => {
+          if (result.loading) return <CircularProgress className='loader' />;
+          if (result.error) return <p>{result.error.message}</p>;
+          if (result.data && result.data.allCourses.length > 0) {
+            return 'There is already a video in the database';
+          } else {
+            return (
+              <Layout
+                key={finishSave}
+                saveAnswer={video => handleSaveVideo(video)}
+                isLoading={isLoading}
+                finishSave={finishSave}
+              />
+            );
+          }
+        }}
+      </Query>
+    </Fragment>
   );
 };
 

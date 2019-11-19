@@ -86,6 +86,14 @@ const EmailModal = props => {
           <div className='button-save-container'>
             <Button
               variant='contained'
+              color='primary'
+              onClick={() => props.onCloseEmailModal()}
+              disabled={false}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant='contained'
               color='secondary'
               onClick={() => props.onProceed(currentEmail)}
               disabled={!canProceed()}

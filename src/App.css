@@ -62,6 +62,10 @@
   margin-top: 10px;
 }
 
+.button-save-container button {
+  margin-right: 4px;
+}
+
 .answer-list {
   max-height: 245px;
   overflow: scroll;

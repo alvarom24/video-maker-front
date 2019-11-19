@@ -34,6 +34,12 @@ const Sidebar = props => {
           onClick={() => props.onChange('Creator')}
           active={props.selectedItem === 'Creator'}
         />
+        <MenuItem
+          title='Results'
+          icon={IconSettings}
+          onClick={() => props.onChange('Results')}
+          active={props.selectedItem === 'Results'}
+        />
         <div className={css(styles.separator)}></div>
         <MenuItem
           title='Course'

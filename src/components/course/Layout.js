@@ -6,6 +6,7 @@ import VideoPlayer from '../shared/videoplayer/VideoPlayer';
 import QuestionModal from './QuestionModal';
 import FinalizationModal from './FinalizationModal';
 import EmailModal from './EmailModal';
+import Button from '@material-ui/core/Button';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,6 +77,16 @@ const Layout = props => {
       setAnsweredSucessfull(true);
     }
     setIsOpenModalFinalization(true);
+
+    const variables = {
+      courseId: props.video.id,
+      videoUrl: props.video.videoUrl,
+      user: currentEmail,
+      userAnswers: JSON.stringify(userAnswers),
+      correctAnswers: JSON.stringify(correctAnswers),
+    };
+    debugger;
+    props.handleFinishVideo(variables);
   };
 
   const handleCloseFinishModal = () => {
@@ -85,6 +96,10 @@ const Layout = props => {
 
   const onStartWithEmail = email => {
     setCurrentEmail(email);
+    setIsOpenEmailModal(false);
+  };
+
+  const handleCloseEmailModal = () => {
     setIsOpenEmailModal(false);
   };
 
@@ -130,10 +145,21 @@ const Layout = props => {
     );
   } else {
     return (
-      <EmailModal
-        open={isOpenEmailModal}
-        onProceed={email => onStartWithEmail(email)}
-      />
+      <Fragment>
+        <Button
+          variant='contained'
+          color='secondary'
+          onClick={() => setIsOpenEmailModal(true)}
+          disabled={isOpenEmailModal}
+        >
+          Start
+        </Button>
+        <EmailModal
+          open={isOpenEmailModal}
+          onProceed={email => onStartWithEmail(email)}
+          onCloseEmailModal={() => handleCloseEmailModal()}
+        />
+      </Fragment>
     );
   }
 };
