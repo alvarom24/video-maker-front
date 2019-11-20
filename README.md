@@ -21,7 +21,7 @@ I is a simple react application, with Apollo GraphQL integration and Material UI
 
 previous to run this project make sure you have the api project running.
 
-Clone or download the files of the project, in terminal navigate to the root foldel and run yarn start, then navigate to http://localhost:3000
+Clone or download the files of the project, in terminal navigate to the root foldel and run "yarn" to install all packages then run "yarn start", then navigate to http://localhost:3000
 
 ### NOTE:
 
